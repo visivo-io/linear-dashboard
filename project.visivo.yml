@@ -1,0 +1,31 @@
+name: linear-dashboards
+defaults:
+  target_name: "{{ env_var('LINEAR_TARGET') }}"
+includes:
+  - path: charts.visivo.yml
+  - path: traces.visivo.yml
+alerts: []
+targets:
+  - name: remote-snowflake
+    type: snowflake
+    database: "{{env_var('LINEAR_DATABASE')}}" 
+    account: "{{env_var('LINEAR_SNOWFLAKE_ACCOUNT')}}"
+    db_schema: "{{env_var('LINEAR_DB_SCHEMA')}}"
+    username: "{{ env_var('LINEAR_DB_USER') }}"
+    warehouse: "{{ env_var('LINEAR_WAREHOUSE') }}"
+    password: "{{ env_var('LINEAR_DB_PASSWORD') }}"
+    role: "{{env_var('LINEAR_ROLE')}}"
+models:
+  - name: issues
+    sql: select * from issue
+
+tables: []
+
+dashboards:
+- name: Linear Dashboard
+  rows:
+  - height: medium
+    items:
+    - width: 1
+      chart: ref(Time To Triage)
+
