@@ -36,3 +36,29 @@ charts:
         text: Started To Completed
         font: 
           size: {{big_number_font_size}}
+  
+  - name: Issues Created Per Week
+    selector:
+      name: single-value-4
+      type: single
+    traces:
+      - ref(issues-created-per-week-all-time)
+      - ref(issues-created-per-week-past-ninety-days)
+    layout: 
+      title: 
+        text: Created per Week
+        font: 
+          size: {{big_number_font_size}}
+  
+  - name: Issues Completed Per Week
+    selector:
+      name: single-value-5
+      type: single
+    traces:
+      - ref(issues-completed-per-week-all-time)
+      - ref(issues-completed-per-week-past-ninety-days)
+    layout: 
+      title: 
+        text: Completed per Week
+        font: 
+          size: {{big_number_font_size}}

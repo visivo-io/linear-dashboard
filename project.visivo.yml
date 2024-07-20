@@ -28,10 +28,8 @@ dashboards:
       - chart: ref(Hours To Triage)
       - chart: ref(Hours Triage To Start)
       - chart: ref(Hours Start To Completed)
-      - markdown: |
-          ## New issues created / week (ALL Time)
-      - markdown: |
-          ## Issues closed / week (ALL Time)
+      - chart: ref(Issues Created Per Week)
+      - chart: ref(Issues Completed Per Week)
   - height: medium
     items:
       - markdown: |

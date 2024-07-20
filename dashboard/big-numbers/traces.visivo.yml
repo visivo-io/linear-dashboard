@@ -74,3 +74,47 @@ traces:
         text: Last 90 Days
     filters:
       - query(TRIAGED_AT > dateadd('day', -90, current_date ))
+
+  - name: issues-created-per-week-all-time
+    model: ref(issues)
+    columns: 
+      issues_per_week: COUNT(distinct id) / count(distinct date_trunc('week', created_at))
+    props:
+      type: indicator 
+      value: column(issues_per_week)[0]
+      title:
+        text: All Time
+  - name: issues-created-per-week-past-ninety-days
+    model: ref(issues)
+    columns: 
+      issues_per_week: COUNT(distinct id) / count(distinct date_trunc('week', created_at))
+    props:
+      type: indicator 
+      value: column(issues_per_week)[0]
+      title:
+        text: Last 90 Days
+    filters:
+      - query(created_at > dateadd('day', -90, current_date ))
+  
+  - name: issues-completed-per-week-all-time
+    model: ref(issues)
+    columns: 
+      issues_per_week: COUNT(distinct id) / count(distinct date_trunc('week', completed_at))
+    props:
+      type: indicator 
+      value: column(issues_per_week)[0]
+      title:
+        text: All Time
+    filters: 
+      - query(completed_at is not null)
+  - name: issues-completed-per-week-past-ninety-days
+    model: ref(issues)
+    columns: 
+      issues_per_week: COUNT(distinct id) / count(distinct date_trunc('week', completed_at))
+    props:
+      type: indicator 
+      value: column(issues_per_week)[0]
+      title:
+        text: Last 90 Days
+    filters:
+      - query(completed_at > dateadd('day', -90, current_date ))
