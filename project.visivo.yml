@@ -2,8 +2,7 @@ name: linear-dashboards
 defaults:
   target_name: "{{ env_var('LINEAR_TARGET') }}"
 includes:
-  - path: charts.visivo.yml
-  - path: traces.visivo.yml
+  - path: dashboard/dashboard.visivo.yml
 alerts: []
 targets:
   - name: remote-snowflake
