@@ -1,11 +1,38 @@
+# {% set big_number_font_size = 24%}
 charts:
-  - name: Time To Triage
+  - name: Hours To Triage
+    selector:
+      name: single-value
+      type: single
     traces:
-      - ref(time-to-triage)
+      - ref(time-to-triage-all-time)
+      - ref(time-to-triage-last-ninety-days)
     layout: 
       title: 
-        text: Time To Triage
+        text: Created To Triaged
         font: 
-          size: 30
-          color: blue
-        
+          size: {{big_number_font_size}}
+  - name: Hours Triage To Start
+    selector:
+      name: single-value-2
+      type: single
+    traces:
+      - ref(triage-to-start-all-time)
+      - ref(triage-to-start-last-ninety-days)
+    layout: 
+      title: 
+        text: Triaged To Started
+        font: 
+          size: {{big_number_font_size}}
+  - name: Hours Start To Completed
+    selector:
+      name: single-value-3
+      type: single
+    traces:
+      - ref(start-to-completed-all-time)
+      - ref(start-to-completed-last-ninety-days)
+    layout: 
+      title: 
+        text: Started To Completed
+        font: 
+          size: {{big_number_font_size}}

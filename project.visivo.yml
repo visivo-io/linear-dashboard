@@ -24,9 +24,31 @@ tables: []
 dashboards:
 - name: Linear Dashboard
   rows:
+  - height: small
+    items:
+      - chart: ref(Hours To Triage)
+      - chart: ref(Hours Triage To Start)
+      - chart: ref(Hours Start To Completed)
+      - markdown: |
+          ## New issues created / week (ALL Time)
+      - markdown: |
+          ## Issues closed / week (ALL Time)
   - height: medium
     items:
-    - width: 1
-      chart: ref(Time To Triage)
-      
+      - markdown: |
+          ## Issue Creation By Person (All Time Over Time variable selector on date grain)
+      - markdown: |
+          ## Issue Completion by Person (all time over time variable selector on date grain)
+      - markdown: |
+          ## Per Person Started to Completed Time (all time & by quarter)
+  - height: medium 
+    items: 
+      - markdown: | 
+          ## Cohort of all issues over time (one trace including done & one without)
+      - markdown: | 
+          ## Sankey of issue status transitions
+
+    
+    
+
 
