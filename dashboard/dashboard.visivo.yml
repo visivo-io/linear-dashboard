@@ -1,2 +1,3 @@
 includes:
   - path: /big-numbers/big-numbers.visivo.yml
+  - path: /issues-over-time/issues-over-time.visivo.yml

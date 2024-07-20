@@ -16,7 +16,16 @@ targets:
     role: "{{env_var('LINEAR_ROLE')}}"
 models:
   - name: issues
-    sql: select * from issue
+    sql: |
+      select 
+        i.*, 
+        ua.display_name as assignee_name, 
+        uc.display_name as creator_name
+      from issue i 
+      left JOIN users ua 
+        on ua.id = i.assignee_id
+      left JOIN users uc 
+        on uc.id = i.creator_id
 
 tables: []
 
@@ -32,12 +41,14 @@ dashboards:
       - chart: ref(Issues Completed Per Week)
   - height: medium
     items:
-      - markdown: |
-          ## Issue Creation By Person (All Time Over Time variable selector on date grain)
-      - markdown: |
-          ## Issue Completion by Person (all time over time variable selector on date grain)
-      - markdown: |
-          ## Per Person Started to Completed Time (all time & by quarter)
+      - chart: ref(issues-created-total-over-time)
+      - chart: ref(issues-completed-total-over-time)
+      - chart: ref(time-to-complete-total-over-time)
+  - height: medium
+    items:
+      - chart: ref(issues-created-per-user-over-time)
+      - chart: ref(issues-completed-per-user-over-time)
+      - chart: ref(time-to-complete-per-user-over-time)
   - height: medium 
     items: 
       - markdown: | 

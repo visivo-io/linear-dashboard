@@ -1,0 +1,68 @@
+traces:
+  - name: issues-created-per-user-per-month
+    model: ref(issues)
+    cohort_on: creator_name
+    props: 
+      type: bar
+      x: query(date_trunc('month', created_at)::date::varchar)
+      y: query(count(*) ) 
+    order_by: 
+      - query(date_trunc('month', created_at)::date asc)
+  - name: issues-completed-per-user-per-month
+    model: ref(issues)
+    cohort_on: creator_name
+    props: 
+      type: bar
+      x: query(date_trunc('month', completed_at)::date::varchar)
+      y: query(count(*) ) 
+    order_by: 
+      - query(date_trunc('month', completed_at)::date asc)
+    filters: 
+      - query(completed_at is not null)
+  - name: time-to-complete-issues-per-user-per-month
+    model: ref(issues)
+    cohort_on: creator_name
+    props: 
+      type: bar
+      x: query(date_trunc('month', completed_at)::date::varchar)
+      y: query( avg( datediff('minute', created_at, completed_at) / 1440 ) ) 
+    order_by: 
+      - query(date_trunc('month', completed_at)::date asc)
+    filters: 
+      - query(completed_at is not null)
+
+  #{% set date_grains = ['month', 'day', 'week', 'quarter', 'year']%}
+  #{% for date_grain in date_grains %}
+  - name: issues-created-per-{{date_grain}}
+    model: ref(issues)
+    cohort_on: "'{{date_grain}}'"
+    props: 
+      type: bar
+      x: query(date_trunc('{{date_grain}}', created_at)::date::varchar)
+      y: query(count(*) ) 
+    order_by: 
+      - query(date_trunc('{{date_grain}}', created_at)::date asc)
+  - name: issues-completed-per-{{date_grain}}
+    model: ref(issues)
+    cohort_on: "'{{date_grain}}'"
+    props: 
+      type: bar
+      x: query(date_trunc('{{date_grain}}', completed_at)::date::varchar)
+      y: query(count(*) ) 
+    order_by: 
+      - query(date_trunc('{{date_grain}}', completed_at)::date asc)
+    filters: 
+      - query(completed_at is not null)
+  - name: time-to-complete-issues-per-{{date_grain}}
+    model: ref(issues)
+    cohort_on: "'{{date_grain}}'"
+    props: 
+      type: bar
+      x: query(date_trunc('{{date_grain}}', completed_at)::date::varchar)
+      y: query( avg( datediff('minute', created_at, completed_at) / 1440 ) ) 
+    order_by: 
+      - query(date_trunc('{{date_grain}}', completed_at)::date asc)
+    filters: 
+      - query(completed_at is not null)
+#{% endfor %}      
+      
