@@ -44,17 +44,15 @@ dashboards:
       - chart: ref(issues-created-total-over-time)
       - chart: ref(issues-completed-total-over-time)
       - chart: ref(time-to-complete-total-over-time)
+  - height: large 
+    items: 
+      - chart: ref(issues-distribution-daily)
+      - chart: ref(sankey-chart)
   - height: medium
     items:
       - chart: ref(issues-created-per-user-over-time)
       - chart: ref(issues-completed-per-user-over-time)
       - chart: ref(time-to-complete-per-user-over-time)
-  - height: medium 
-    items: 
-      - markdown: | 
-          ## Cohort of all issues over time (one trace including done & one without)
-      - markdown: | 
-          ## Sankey of issue status transitions
 
     
     

@@ -1,3 +1,4 @@
 includes:
-  - path: /big-numbers/big-numbers.visivo.yml
-  - path: /issues-over-time/issues-over-time.visivo.yml
+  - path: /big-numbers/includes.visivo.yml
+  - path: /issues-over-time/includes.visivo.yml
+  - path: /issue-flow-distribution/includes.visivo.yml

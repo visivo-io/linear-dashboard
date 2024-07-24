@@ -1,0 +1,194 @@
+
+models:
+  - name: sankey-model
+    sql: |
+      WITH workflow_state_modified as (
+          select 
+              id, 
+              name, 
+              color, 
+              position,
+              CASE name
+                  wHEn 'Triage' THEN 0
+                  WHEN 'Backlog' THEN 1 
+                  WHEN 'Todo' THEN 2 
+                  WHEN 'On Deck' THEN 3 
+                  WHEN 'In Progress' THEN 4
+                  WHEN 'In Review' THEN 5 
+                  WHEN 'Canceled' THEN 6
+                  WHEN 'Done' THEN 7 
+              END as modified_position
+                  
+          from workflow_state
+          ORDER BY modified_position asc
+      )
+      SELECT 
+          ih.id,
+          ih.issue_id, 
+          ih.created_at, 
+          ih.changes,
+          i.identifier,
+          ows.modified_position as old_position,
+          ows.name as old_name,
+          ows.color as old_color,
+          nws.modified_position as new_position,
+          nws.name as new_name,
+          nws.color as new_color
+          
+      from issue_history ih 
+      JOIN issue i 
+          on i.id = ih.issue_id
+      JOIN workflow_state_modified nws
+          on nws.id = ih.to_state_id 
+      JOIN workflow_state_modified ows 
+          ON ows.id = ih.from_state_id
+      left join workflow_state_modified cws 
+          on cws.id = i.state_id 
+      ORDER BY issue_id, ih.created_at asc
+      
+  - name: issues-stages-daily
+    sql: |
+      WITH 
+      workflow_state_modified as (
+                select 
+                    id, 
+                    name, 
+                    color, 
+                    position,
+                    CASE name
+                        wHEn 'Triage' THEN 0
+                        WHEN 'Backlog' THEN 1 
+                        WHEN 'Todo' THEN 2 
+                        WHEN 'On Deck' THEN 3 
+                        WHEN 'In Progress' THEN 4
+                        WHEN 'In Review' THEN 5 
+                        WHEN 'Canceled' THEN 6
+                        WHEN 'Done' THEN 7 
+                    END as modified_position
+                        
+                from workflow_state
+                ORDER BY modified_position asc
+      ), 
+      issue_history_modified as (
+          select 
+              *, 
+              row_number() over(partition by issue_id ORDER BY created_at asc) as rn
+          from issue_history 
+      ),
+      change_log_sans_current as (
+            SELECT 
+                ih.id,
+                ih.issue_id, 
+                ih.created_at as issue_changed_at,
+                i.created_at as issue_created_at,
+                ih.changes,
+                i.identifier,
+                ows.modified_position as old_position,
+                ows.name as old_name,
+                ows.color as old_color,
+                nws.modified_position as new_position,
+                nws.name as new_name,
+                nws.color as new_color,
+                COALESCE(ows.name, cws.name) as change_log_name,
+                COALESCE(
+                  lag(ih.created_at) OVER(PARTITION BY issue_id ORDER BY ih.created_at), 
+                  issue_created_at
+                ) as  valid_from, 
+                dateadd('ms', -1, ih.created_at) as valid_to, 
+                row_number() OVER(Partition by issue_id ORDER by ih.created_at desc) = 1 as is_current, 
+                ih.rn
+            from issue_history_modified ih 
+            JOIN issue i 
+                on i.id = ih.issue_id
+            LEFT JOIN workflow_state_modified nws
+                on nws.id = ih.to_state_id 
+            LEFT JOIN workflow_state_modified ows 
+                ON ows.id = ih.from_state_id
+            left join workflow_state_modified cws 
+                on cws.id = i.state_id 
+            WHERE ih.rn = 1 or ih.to_state_id is not null           
+            ORDER BY issue_id, ih.created_at asc
+      )
+      --SELECT * FROM change_log_sans_current where issue_id = '357e8e55-d741-402c-af16-7733a97dad6f';
+      , 
+      change_log as (
+          SELECT 
+              id, 
+              issue_id, 
+              identifier, 
+              change_log_name, 
+              valid_from, 
+              valid_to,
+              false as is_current
+          FROM change_log_sans_current
+          WHERE not (rn = 1 and is_current)
+          
+          UNION ALL 
+          
+          SELECT 
+              id, 
+              issue_id, 
+              identifier, 
+              Coalesce(new_name, change_log_name) as change_log_name, 
+              issue_changed_at as valid_from, 
+              '9999-01-01 12:00:00.000 +0000'::timestamp_tz as valid_to,
+              true as is_current
+          FROM change_log_sans_current
+          WHERE is_current 
+      )
+      --SELECT * FROM change_log where issue_id = '357e8e55-d741-402c-af16-7733a97dad6f';
+      , 
+      daily_change_log as (
+          SELECT 
+              issue_id, 
+              identifier, 
+              max_by(change_log_name, valid_from) as change_log_name, 
+              valid_from::date as valid_from_day, 
+              coalesce(
+                  dateadd(
+                      'day', 
+                      -1,
+                      lead(valid_from::date) OVER(partition by issue_id order by valid_from::date)
+                  ),
+                  '9999-01-01'::date
+              )as valid_to_day
+          FROM change_log 
+          GROUP BY 
+              issue_id, 
+              identifier,
+              valid_from::date
+      )
+      --SELECT * FROM daily_change_log where issue_id = '357e8e55-d741-402c-af16-7733a97dad6f';
+      , 
+      date_spine as (
+          with spine as (
+            select (select min(created_at) from issue)::date as as_of_date 
+            union all
+            select dateadd('day', 1, as_of_date) from spine
+            where as_of_date <= sysdate()::Date
+          )
+          select * from spine
+      ),
+      state_names as (
+          select distinct name from workflow_state_modified
+      ), 
+      scaffolding as (
+          SELECT 
+              ds.as_of_date, 
+              sn.name
+          FROM date_spine ds 
+          CROSS JOIN state_names sn 
+      )
+      SELECt 
+          s.as_of_date, 
+          s.name as stage_name, 
+          coalesce(
+              count(distinct dcl.issue_id), 
+              0
+          ) as issues
+      FROM scaffolding s
+      LEFT JOIN daily_change_log dcl 
+          ON s.as_of_date between dcl.valid_from_day and dcl.valid_to_day
+          AND s.name = dcl.change_log_name
+      GROUP BY 1,2
+      ORDER BY as_of_date, stage_name 
