@@ -1,4 +1,4 @@
-# {% set big_number_font_size = 24%}
+# {% set big_number_font_size = 19%}
 charts:
   - name: Hours To Triage
     selector:

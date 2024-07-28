@@ -1,2 +1,2 @@
 includes:
-  - path: "sankey.visivo.yml"
+  - path: "charts.visivo.yml"

@@ -30,6 +30,7 @@ charts:
     layout: 
       title: 
         text: Issues Distribution
+      
 
   - name: sankey-chart 
     traces: 
