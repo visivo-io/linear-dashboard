@@ -33,15 +33,19 @@ charts:
       
 
   - name: sankey-chart 
+    selector: ref(big-number-selector)
     traces: 
-      - name: sankey-trace 
+      #{% set cohorts = ['All Time', 'Last 90 Days'] %}
+      #{% for cohort in cohorts %}
+      - name: sankey-trace-{{cohort}} 
         model: ref(sankey-model)
+        cohort_on: "'{{cohort}}'"
         columns:
           source: old_position
           target: new_position 
           value: count(distinct id)
         props:
-          type: sankey 
+          type: sankey
           node: 
             label: ['Triage', 'Backlog', 'Todo', 'On Deck', 'In Progress', 'In Review', 'Canceled', 'Done']
             x: [0.0, .20, .32, .44, .58, .69, 0.83, .99]
@@ -52,6 +56,11 @@ charts:
             source: column(source)
             target: column(target)
             value: column(value)
+        #{% if cohort == 'Last 90 Days' %}
+        filters: 
+          - query(created_at >= dateadd('day', -90, sysdate()::date))
+        #{% endif %}
+      #{% endfor %}
     layout: 
       title: 
         text: Flow of Issues
