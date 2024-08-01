@@ -29,19 +29,9 @@ models:
 
 tables: []
 
-selectors:
-  - name: big-number-selector
-    type: single
-    options:
-      - ref(time-to-triage-all-time)
-      - ref(time-to-triage-last-ninety-days)
-
 dashboards:
 - name: Linear Dashboard
   rows:
-  - height: compact
-    items: 
-      - selector: ref(big-number-selector)
   - height: small
     items:
       - chart: ref(Hours To Triage)
