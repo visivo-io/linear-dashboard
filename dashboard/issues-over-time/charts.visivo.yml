@@ -1,0 +1,83 @@
+charts:
+  - name: issues-created-per-user-over-time
+    selector: 
+      name: user_name
+      type: multiple
+    traces:
+      - ref(issues-created-per-user-per-month)
+    layout: 
+      title: 
+        text: Issues Created Per User
+      barmode: stack 
+      legend: 
+        orientation: h
+        valign: bottom
+  - name: issues-completed-per-user-over-time
+    selector: ref(user_name)
+    traces:
+      - ref(issues-completed-per-user-per-month)
+    layout: 
+      title: 
+        text: Issues Completed Per User
+      barmode: stack 
+      legend: 
+        orientation: h
+        valign: bottom
+  - name: time-to-complete-per-user-over-time
+    selector: ref(user_name)
+    traces:
+      - ref(time-to-complete-issues-per-user-per-month)
+    layout: 
+      title: 
+        text: Time To Complete Issues Per User
+      yaxis: 
+        title: 
+          text: Days
+      legend: 
+        orientation: h
+        valign: bottom       
+
+  #{% set date_grains = ['month', 'day', 'week', 'quarter', 'year']%}
+  - name: issues-created-total-over-time
+    selector: 
+      name: issue_metrics_date_grain
+      type: single
+    traces:
+      #{% for date_grain in date_grains %}
+      - ref(issues-created-per-{{date_grain}})
+      #{% endfor %}
+    layout: 
+      title: 
+        text: Issues Created
+      barmode: stack 
+      legend: 
+        orientation: h
+        valign: bottom
+  - name: issues-completed-total-over-time
+    selector: ref(issue_metrics_date_grain)
+    traces:
+      #{% for date_grain in date_grains %}
+      - ref(issues-completed-per-{{date_grain}})
+      #{% endfor %}
+    layout: 
+      title: 
+        text: Issues Completed
+      barmode: stack 
+      legend: 
+        orientation: h
+        valign: bottom
+  - name: time-to-complete-total-over-time
+    selector: ref(issue_metrics_date_grain)
+    traces:
+      #{% for date_grain in date_grains %}
+      - ref(time-to-complete-issues-per-{{date_grain}})
+      #{% endfor %}
+    layout: 
+      title: 
+        text: Time To Complete Issues
+      yaxis: 
+        title: 
+          text: Days
+      legend: 
+        orientation: h
+        valign: bottom 

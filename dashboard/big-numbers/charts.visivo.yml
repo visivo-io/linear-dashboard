@@ -1,0 +1,57 @@
+# {% set big_number_font_size = 19%}
+
+charts:
+  - name: Hours To Triage
+    selector: 
+      name: big-number-selector
+      type: single
+    traces:
+      - ref(time-to-triage-all-time)
+      - ref(time-to-triage-last-ninety-days)
+    layout: 
+      title: 
+        text: Created To Triaged
+        font: 
+          size: {{big_number_font_size}}
+  - name: Hours Triage To Start
+    selector: ref(big-number-selector)
+    traces:
+      - ref(triage-to-start-all-time)
+      - ref(triage-to-start-last-ninety-days)
+    layout: 
+      title: 
+        text: Triaged To Started
+        font: 
+          size: {{big_number_font_size}}
+  - name: Hours Start To Completed
+    selector: ref(big-number-selector)
+    traces:
+      - ref(start-to-completed-all-time)
+      - ref(start-to-completed-last-ninety-days)
+    layout: 
+      title: 
+        text: Started To Completed
+        font: 
+          size: {{big_number_font_size}}
+  
+  - name: Issues Created Per Week
+    selector: ref(big-number-selector)
+    traces:
+      - ref(issues-created-per-week-all-time)
+      - ref(issues-created-per-week-past-ninety-days)
+    layout: 
+      title: 
+        text: Created per Week
+        font: 
+          size: {{big_number_font_size}}
+  
+  - name: Issues Completed Per Week
+    selector: ref(big-number-selector)
+    traces:
+      - ref(issues-completed-per-week-all-time)
+      - ref(issues-completed-per-week-past-ninety-days)
+    layout: 
+      title: 
+        text: Completed per Week
+        font: 
+          size: {{big_number_font_size}}

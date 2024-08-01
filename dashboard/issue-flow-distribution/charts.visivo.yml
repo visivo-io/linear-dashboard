@@ -1,0 +1,64 @@
+includes:
+  - path: "models.visivo.yml"
+charts:
+  - name: issues-distribution-daily
+    traces: 
+      #{% set states = ['Triage', 'Backlog', 'Todo', 'On Deck', 'In Progress', 'In Review', 'Canceled', 'Done'] %}
+      #{% set state_colors = ['#FC7840','#bec2c8','#e2e2e2','#db6e1f','#f2c94c','#0f783c','#95a2b3','#5e6ad2'] %}
+      #{% for state in states|reverse %}
+      - name: issue-distribution-{{state}}
+        model: ref(issues-stages-daily)
+        cohort_on: "'{{state}}'"
+        props:  
+          type: scatter
+          x: query(as_of_date::varchar )
+          y: query(issues) 
+          stackgroup: 'one'
+          fillcolor: '{{state_colors[loop.revindex0]}}'
+          line: 
+            shape: 'spline'
+            color: '{{state_colors[loop.revindex0]}}'
+        order_by: 
+          - query(as_of_date  asc)
+          - query(issues desc)
+        filters: 
+          - query(stage_name = '{{state}}' )
+
+      #{% endfor %}
+    layout: 
+      title: 
+        text: Issues Distribution
+      
+
+  - name: sankey-chart 
+    selector: ref(big-number-selector)
+    traces: 
+      #{% set cohorts = ['All Time', 'Last 90 Days'] %}
+      #{% for cohort in cohorts %}
+      - name: sankey-trace-{{cohort}} 
+        model: ref(sankey-model)
+        cohort_on: "'{{cohort}}'"
+        columns:
+          source: old_position
+          target: new_position 
+          value: count(distinct id)
+        props:
+          type: sankey
+          node: 
+            label: ['Triage', 'Backlog', 'Todo', 'On Deck', 'In Progress', 'In Review', 'Canceled', 'Done']
+            x: [0.0, .20, .32, .44, .58, .69, 0.83, .99]
+            y: [0.9, 0.9, 0.6, 0.4, 0.6, 0.4, 0.2, 0.5]
+            color: ['#FC7840','#bec2c8','#e2e2e2','#db6e1f','#f2c94c','#0f783c','#95a2b3','#5e6ad2']      
+            pad: 5
+          link: 
+            source: column(source)
+            target: column(target)
+            value: column(value)
+        #{% if cohort == 'Last 90 Days' %}
+        filters: 
+          - query(created_at >= dateadd('day', -90, sysdate()::date))
+        #{% endif %}
+      #{% endfor %}
+    layout: 
+      title: 
+        text: Flow of Issues

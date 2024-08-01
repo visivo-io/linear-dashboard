@@ -2,8 +2,7 @@ name: linear-dashboards
 defaults:
   target_name: "{{ env_var('LINEAR_TARGET') }}"
 includes:
-  - path: charts.visivo.yml
-  - path: traces.visivo.yml
+  - path: dashboard/dashboard.visivo.yml
 alerts: []
 targets:
   - name: remote-snowflake
@@ -17,15 +16,45 @@ targets:
     role: "{{env_var('LINEAR_ROLE')}}"
 models:
   - name: issues
-    sql: select * from issue
+    sql: |
+      select 
+        i.*, 
+        ua.display_name as assignee_name, 
+        uc.display_name as creator_name
+      from issue i 
+      left JOIN users ua 
+        on ua.id = i.assignee_id
+      left JOIN users uc 
+        on uc.id = i.creator_id
 
 tables: []
 
 dashboards:
 - name: Linear Dashboard
   rows:
+  - height: small
+    items:
+      - chart: ref(Hours To Triage)
+      - chart: ref(Hours Triage To Start)
+      - chart: ref(Hours Start To Completed)
+      - chart: ref(Issues Created Per Week)
+      - chart: ref(Issues Completed Per Week)
   - height: medium
     items:
-    - width: 1
-      chart: ref(Time To Triage)
+      - chart: ref(issues-created-total-over-time)
+      - chart: ref(issues-completed-total-over-time)
+      - chart: ref(time-to-complete-total-over-time)
+  - height: large 
+    items: 
+      - chart: ref(issues-distribution-daily)
+      - chart: ref(sankey-chart)
+  - height: medium
+    items:
+      - chart: ref(issues-created-per-user-over-time)
+      - chart: ref(issues-completed-per-user-over-time)
+      - chart: ref(time-to-complete-per-user-over-time)
+
+    
+    
+
 
