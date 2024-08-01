@@ -1,9 +1,7 @@
 # {% set big_number_font_size = 19%}
 charts:
   - name: Hours To Triage
-    selector:
-      name: big-number-selector
-      type: single
+    selector: ref(big-number-selector)
     traces:
       - ref(time-to-triage-all-time)
       - ref(time-to-triage-last-ninety-days)
