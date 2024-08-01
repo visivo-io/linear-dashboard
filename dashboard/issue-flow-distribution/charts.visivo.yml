@@ -1,5 +1,3 @@
-
-
 includes:
   - path: "models.visivo.yml"
 charts:
