@@ -9,4 +9,4 @@ Pre-built dashboards to help visualize your Linear projects, issues and employee
    ```
 2. Then set the following env variables:
 
-  - Jared, was there suppose to be something here? 
+  - `LINEAR_TARGET`: This env var should be the name of a functioning snowflake target in your project. 
