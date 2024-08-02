@@ -1,0 +1,45 @@
+name: Build and Deploy
+on:
+  schedule:
+    - cron: "0 4 * * *" 
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+
+      - name: Install and Build
+        run: |
+          pip install visivo
+          visivo dist
+        env:
+          LINEAR_DB_PASSWORD: ${{secrets.LINEAR_DB_PASSWORD}}
+          LINEAR_DB_USER: ${{secrets.LINEAR_DB_USER}}
+          LINEAR_SNOWFLAKE_ACCOUNT: ${{secrets.LINEAR_SNOWFLAKE_ACCOUNT}}
+          LINEAR_WAREHOUSE: ${{secrets.LINEAR_WAREHOUSE}}
+          LINEAR_ROLE: ${{secrets.LINEAR_ROLE}}
+          LINEAR_DB_SCHEMA: ${{secrets.LINEAR_DB_SCHEMA}}
+          LINEAR_DATABASE: ${{secrets.LINEAR_DATABASE}}
+          LINEAR_TABLE: ${{secrets.LINEAR_TABLE}}
+          LINEAR_TARGET: ${{secrets.LINEAR_TARGET}}
+          
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './dist'
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
