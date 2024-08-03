@@ -24,6 +24,7 @@ jobs:
         run: |
           pip install visivo
           visivo dist
+          cp _redirects dist
         env:
           LINEAR_DB_PASSWORD: ${{secrets.LINEAR_DB_PASSWORD}}
           LINEAR_DB_USER: ${{secrets.LINEAR_DB_USER}}
