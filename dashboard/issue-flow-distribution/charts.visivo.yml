@@ -1,12 +1,14 @@
 includes:
   - path: "models.visivo.yml"
 charts:
-  - name: issues-distribution-daily
+  #{% set cohorts = ['All Time', 'Last 90 Days'] %}
+  #{% for cohort in cohorts %}
+  - name: "issues-distribution-daily-{{cohort}}"
     traces: 
       #{% set states = ['Triage', 'Backlog', 'Todo', 'On Deck', 'In Progress', 'In Review', 'Canceled', 'Done'] %}
       #{% set state_colors = ['#FC7840','#bec2c8','#e2e2e2','#db6e1f','#f2c94c','#0f783c','#95a2b3','#5e6ad2'] %}
       #{% for state in states|reverse %}
-      - name: issue-distribution-{{state}}
+      - name: issue-distribution-{{state}}-{{cohort}}
         model: ref(issues-stages-daily)
         cohort_on: "'{{state}}'"
         props:  
@@ -23,11 +25,14 @@ charts:
           - query(issues desc)
         filters: 
           - query(stage_name = '{{state}}' )
-
+          #{% if cohort == 'Last 90 Days' %}
+          - query(as_of_date >= dateadd('day', -90, sysdate()::date))
+          #{% endif %}
       #{% endfor %}
     layout: 
       title: 
-        text: Issues Distribution
+        text: "Issues Distribution {{cohort}}"
+    #{% endfor %}
       
 
   - name: sankey-chart 
