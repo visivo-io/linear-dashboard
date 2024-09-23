@@ -35,6 +35,11 @@ selectors:
     options:
       - ref(time-to-triage-all-time)
       - ref(time-to-triage-last-ninety-days)
+  - name: issue-flow-distribution-selector
+    type: single
+    options:
+      - ref(All Time)
+      - ref(Last 90 Days)
 
 dashboards:
 - name: Linear Dashboard
@@ -42,6 +47,7 @@ dashboards:
   - height: compact
     items: 
       - selector: ref(big-number-selector)
+      - selector: ref(issue-flow-distribution-selector)
   - height: small
     items:
       - chart: ref(Hours To Triage)
@@ -49,20 +55,36 @@ dashboards:
       - chart: ref(Hours Start To Completed)
       - chart: ref(Issues Created Per Week)
       - chart: ref(Issues Completed Per Week)
-  - height: medium
-    items:
-      - chart: ref(issues-created-total-over-time)
-      - chart: ref(issues-completed-total-over-time)
-      - chart: ref(time-to-complete-total-over-time)
-  - height: large 
+  - name: All Time
+    height: large 
     items: 
-      - chart: ref(issues-distribution-daily)
+      - chart: ref(issues-distribution-daily-All Time)
       - chart: ref(sankey-chart)
+  - name: Last 90 Days
+    height: large 
+    items: 
+      - chart: ref(issues-distribution-daily-Last 90 Days)
+      - chart: ref(sankey-chart)
+  - height: compact
+    items: 
+      - selector: 
+          type: single 
+          options: 
+            - ref(Issue Metrics Totals)
+            - ref(Monthly Issue Metrics Broken Out By User)
+
   - height: medium
+    name: Monthly Issue Metrics Broken Out By User
     items:
       - chart: ref(issues-created-per-user-over-time)
       - chart: ref(issues-completed-per-user-over-time)
       - chart: ref(time-to-complete-per-user-over-time)
+  - height: medium
+    name: Issue Metrics Totals
+    items: 
+      - chart: ref(issues-created-total-over-time)
+      - chart: ref(issues-completed-total-over-time)
+      - chart: ref(time-to-complete-total-over-time)
 
     
     
