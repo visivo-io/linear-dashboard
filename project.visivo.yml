@@ -68,10 +68,7 @@ dashboards:
   - height: compact
     items: 
       - selector: 
-<<<<<<< HEAD
           name: issue-metrics-over-time
-=======
->>>>>>> main
           type: single 
           options: 
             - ref(Issue Metrics Totals)
