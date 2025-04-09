@@ -3,3 +3,4 @@ target
 .visivo_cache
 /venv
 dist
+.qodo
